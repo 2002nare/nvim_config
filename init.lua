@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -216,6 +216,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+-- [[ 딜레이 없는 한영 자동 전환 설정 ]]
+local im_group = vim.api.nvim_create_augroup('im-select-group', { clear = true })
+
+vim.api.nvim_create_autocmd('InsertLeave', {
+  group = im_group,
+  callback = function()
+    -- im-select가 설치되어 있다면 실행
+    if vim.fn.executable 'im-select' == 1 then
+      -- macOS 기본 영문 입력기(ABC)로 강제 전환
+      vim.fn.system 'im-select com.apple.keylayout.ABC'
+    end
   end,
 })
 
@@ -937,32 +951,22 @@ require('lazy').setup({
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
+    -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    config = function()
-      -- main 모듈을 찾지 못하는 문제를 피하기 위해 직접 pcall로 감싸서 호출
-      local status, configs = pcall(require, 'nvim-treesitter.configs')
-      if not status then
-        return
-      end
-      configs.setup {
-        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-        auto_install = true,
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
-    end,
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    -- config function을 복잡하게 쓸 필요 없이 lazy.nvim의 기능을 활용합니다.
+    opts = {
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      auto_install = true,
+      highlight = {
+        enable = true,
+      },
+      indent = { enable = true },
+    },
   },
 
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
 
