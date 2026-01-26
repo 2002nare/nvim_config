@@ -219,6 +219,21 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- SSH 환경에서 로컬 클립보드 공유를 위한 OSC 52 설정
+if vim.env.SSH_TTY then
+  vim.g.clipboard = {
+    name = 'OSC 52',
+    copy = {
+      ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+      ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+    },
+    paste = {
+      ['+'] = require('vim.ui.clipboard.osc52').paste '+',
+      ['*'] = require('vim.ui.clipboard.osc52').paste '*',
+    },
+  }
+end
+
 -- [[ 딜레이 없는 한영 자동 전환 설정 ]]
 local im_group = vim.api.nvim_create_augroup('im-select-group', { clear = true })
 
