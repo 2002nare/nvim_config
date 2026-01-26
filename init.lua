@@ -233,6 +233,21 @@ vim.api.nvim_create_autocmd('InsertLeave', {
   end,
 })
 
+-- 자동 저장 그룹 생성
+local autosave_group = vim.api.nvim_create_augroup('autosave', { clear = true })
+
+vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged' }, {
+  group = autosave_group,
+  pattern = '*',
+  callback = function()
+    -- 수정 사항이 있을 때만 조용히 저장 (silent! update)
+    -- update 명령은 파일 내용이 변경되었을 때만 쓰기를 수행합니다.
+    if vim.bo.modified and vim.bo.buftype == '' then
+      vim.cmd 'silent! update'
+    end
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
