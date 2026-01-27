@@ -151,6 +151,10 @@ vim.o.splitbelow = true
 --   and `:help lua-options-guide`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.tabstop = 2 -- 탭 문자가 차지하는 화면상의 너비
+vim.opt.softtabstop = 2 -- 탭 키를 누를 때 삽입되는 공백 수
+vim.opt.shiftwidth = 2 -- >>나 << 키로 들여쓰기 할 때의 너비
+vim.opt.expandtab = true -- 탭 문자를 공백(Space)으로 자동 변환
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
